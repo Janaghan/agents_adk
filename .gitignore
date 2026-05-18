@@ -1,0 +1,8 @@
+.env
+flow_chart.md
+structure.md
+venv/
+__pycache__/
+
+settings.yaml
+session.db
