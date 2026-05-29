@@ -12,6 +12,8 @@ In our ADK implementation, we use a `SequentialAgent` to enforce a strict pipeli
 - **Sequential Agent:** An orchestration wrapper that runs a list of sub-agents in a strict linear order. Agent A finishes, passing its output as context to Agent B.
 - **Loop Agent:** An orchestration wrapper that reruns a set of sub-agents repeatedly until a specific exit condition is met (or a max iteration limit is reached).
 
+**Beginner-Friendly Explanation:**
+Instead of telling one chef, *"Go buy ingredients, then cook the food, then plate it,"* you set up an assembly line. The Shopper buys the food and puts it on a conveyor belt. The Cook takes it, cooks it, and puts it back on the belt. The Plater finishes it. If the Cook burns the food, a Loop sends it back to the Shopper to buy more.
 
 ---
 
@@ -29,20 +31,34 @@ In our ADK implementation, we use a `SequentialAgent` to enforce a strict pipeli
 
 ## 4. Architecture Diagram
 
-```mermaid
-graph TD
-    Start([Start Sequence]) --> Research[Research Agent]
-    
-    Research --> LoopStart{Start Budget Loop}
-    
-    LoopStart --> Plan[Planner Agent]
-    Plan --> Budget[Budget Agent]
-    
-    Budget -- "Over Budget (No Exit)" --> Plan
-    Budget -- "Under Budget (exit_loop)" --> SequenceResume
-    
-    SequenceResume --> Summary[Summary Agent]
-    Summary --> End([End Sequence])
+```text
+      [ Start Sequence ]
+              │
+              ▼
+    ┌────────────────────┐
+    │  research_agent    │
+    └─────────┬──────────┘
+              │
+              ▼ (Start Loop)
+    ┌────────────────────┐ ◄──────┐
+    │  planner_agent     │        │
+    └─────────┬──────────┘        │
+              │                   │
+              ▼                   │
+    ┌────────────────────┐        │
+    │  budget_agent      │ ──[Over Budget]
+    └─────────┬──────────┘
+              │
+        [Under Budget]
+       (Calls exit_loop)
+              │
+              ▼
+    ┌────────────────────┐
+    │  summary_agent     │
+    └─────────┬──────────┘
+              │
+              ▼
+       [ End Sequence ]
 ```
 
 ---

@@ -13,7 +13,10 @@ In our project, we see this in action when the `weather_agent` uses the `get_wea
 - **Session Memory:** Storing the history of user messages and agent responses in a continuous "Session" context window.
 
 **Beginner-Friendly Explanation:**
-If you ask a person in a sealed room what the weather is in Tokyo, they'll guess. But if you give them a smartphone (a Tool), they can look it up and give you a factual answer. Furthermore, if you later say "What should I pack?", they remember you are going to Tokyo (Memory) and suggest an umbrella.
+Think of an AI Agent like a person sitting in a windowless room with no internet. If you ask them, "What is the weather in Tokyo right now?", they can only guess based on books they read years ago. 
+
+- **Tools** are like sliding a smartphone under the door. Now, the AI can open a weather app, look up the exact live temperature in Tokyo, and give you a 100% accurate, factual answer.
+- **Memory** is like the AI keeping a notepad of your conversation. If your next question is simply, "What should I pack?", the AI looks at its notepad, remembers that you are talking about Tokyo, and suggests an umbrella because it just saw that it's raining there.
 
 ---
 
@@ -25,20 +28,20 @@ If you ask a person in a sealed room what the weather is in Tokyo, they'll guess
 
 ## 4. Architecture Diagram
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Runner (Memory)
-    participant Agent
-    participant Tool as External API (Weather)
-
-    User->>Runner (Memory): "What's the weather in Chennai?"
-    Runner (Memory)->>Agent: Passes full chat history + new prompt
-    Agent->>Runner (Memory): Requests function call: get_weather("Chennai")
-    Runner (Memory)->>Tool: Executes Python function
-    Tool-->>Runner (Memory): Returns JSON {temp: 35C}
-    Runner (Memory)->>Agent: Injects tool result into context
-    Agent-->>User: "It's 35°C in Chennai today!"
+```text
+   [ User ]         [ ADK Memory ]        [ Agent ]         [ Weather API ]
+      │                   │                   │                   │
+      ├─ "Weather?" ─────►│                   │                   │
+      │                   ├─ Context + Prompt►│                   │
+      │                   │                   │                   │
+      │                   │◄── Call Tool ─────┤                   │
+      │                   ├─ Execute Func ───────────────────────►│
+      │                   │◄─────────────────────── {temp: 35C} ──┤
+      │                   │                   │                   │
+      │                   ├─ Inject Result ──►│                   │
+      │                   │                   │                   │
+      │◄─── "It's 35°C" ──┼◄── Text Reply ────┤                   │
+      │                   │                   │                   │
 ```
 
 ---

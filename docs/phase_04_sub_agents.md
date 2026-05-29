@@ -13,6 +13,12 @@ In our project, the `research_agent` acts as a "Manager." It doesn't actually se
 - **Transfer to Agent (Handoff):** The mechanism by which a manager pauses its own execution, gives a command to a sub-agent, and waits for that sub-agent to return a result.
 - **Agent Registry:** How the underlying system tracks agent names to ensure control is passed to the correct entity.
 
+**Beginner-Friendly Explanation:**
+Imagine a General Contractor managing the construction of a new house. The contractor doesn't personally install the toilets or wire the electricity—doing everything themselves would lead to mistakes. 
+
+Instead, they use **Delegation**. When it's time for plumbing, the Contractor calls a specialist: the Plumber (a Sub-Agent). The Contractor gives the Plumber instructions and then steps back to wait. The Plumber brings their own highly specialized tools (wrenches, pipes), completes the job flawlessly, and reports back. 
+
+In our AI system, the Manager Agent doesn't try to know everything. Instead, it delegates weather questions to a dedicated Weather Agent and hotel questions to a dedicated Hotel Agent. This makes the system incredibly smart and less prone to errors.
 
 ---
 
@@ -26,24 +32,22 @@ In `agents/research_agent.py`, the agent is configured with `sub_agents=[weather
 
 ## 4. Architecture Diagram
 
-```mermaid
-sequenceDiagram
-    participant Pipeline (Seq)
-    participant Manager (Research Agent)
-    participant Sub1 (Weather Agent)
-    participant Sub2 (Hotel Agent)
-
-    Pipeline (Seq)->>Manager: "Gather research for Chennai"
-    
-    Manager->>Sub1: transfer_to_agent("weather_agent")
-    Note over Sub1: Calls get_weather API
-    Sub1-->>Manager: transfer_to_agent("research_agent") <br> with Weather Data
-    
-    Manager->>Sub2: transfer_to_agent("hotel_agent")
-    Note over Sub2: Calls Google Search API
-    Sub2-->>Manager: transfer_to_agent("research_agent") <br> with Hotel Data
-    
-    Manager-->>Pipeline (Seq): Consolidates all data and completes turn
+```text
+  [ Orchestrator ]
+         │
+         ▼
+ ┌───────────────┐
+ │ research_agent│ ──(1) Transfer──► ┌───────────────┐
+ │  (Manager)    │                   │ weather_agent │ ──(Calls API)
+ │               │ ◄─(2) Returns ────└───────────────┘
+ │               │
+ │               │ ──(3) Transfer──► ┌───────────────┐
+ │               │                   │  hotel_agent  │ ──(Calls API)
+ │               │ ◄─(4) Returns ────└───────────────┘
+ └───────┬───────┘
+         │ (Consolidates Data)
+         ▼
+  [ Orchestrator ]
 ```
 
 ---
