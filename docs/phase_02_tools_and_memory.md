@@ -44,7 +44,7 @@ Think of an AI Agent like a person sitting in a windowless room with no internet
       │                   │                   │                   │
 ```
 
----
+--- 
 
 ## 5. Why This Concept Is Needed
 **The Problem Solved:** Models have a knowledge cutoff date and cannot browse the live internet natively. Furthermore, APIs are stateless by default (each request is treated as brand new).

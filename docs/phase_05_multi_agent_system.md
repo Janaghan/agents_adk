@@ -42,7 +42,7 @@ A Multi-Agent System (MAS) is just like walking into a high-end, fully staffed T
       ┌─────────────────┐
       │  intake_agent   │ ◄─── (Conversational Phase)
       └────────┬────────┘
-               │ (Handoff when ready)
+               │ (handoff when ready)
                ▼
       ┌─────────────────┐
       │coordinator_agent│ ───► [ Research Phase ]

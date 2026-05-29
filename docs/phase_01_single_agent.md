@@ -20,7 +20,7 @@ If a visitor walks in and only says, "I'm here to see John," the receptionist wo
 
 A Single Agent works exactly like this receptionist. It acts as a smart gatekeeper that chats with the user, understands what information is missing, and naturally asks follow-up questions before allowing the system to move forward to the complex planning stages.
 
----
+--- 
 
 ## 3. Implementation Details
 In our project, this is implemented in `agents/intake_agent.py`.

@@ -20,7 +20,7 @@ Instead, they use **Delegation**. When it's time for plumbing, the Contractor ca
 
 In our AI system, the Manager Agent doesn't try to know everything. Instead, it delegates weather questions to a dedicated Weather Agent and hotel questions to a dedicated Hotel Agent. This makes the system incredibly smart and less prone to errors.
 
----
+--- 
 
 ## 3. Implementation Details
 In `agents/research_agent.py`, the agent is configured with `sub_agents=[weather_agent, hotel_agent]`.
