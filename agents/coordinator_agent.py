@@ -9,12 +9,14 @@ budget_loop = LoopAgent(
     name='budget_loop',
     description="Iterative loop to compile an itinerary and verify if it matches the user's budget.",
     sub_agents=[planner_agent, budget_agent],
-    max_iterations=3
+    max_iterations=5
 )
 
 coordinator_agent = SequentialAgent(
     name='coordinator_agent',
-    description="Main Travel Assistant. Coordinates sequential execution of Research, Planning/Budget checks, and final Summary.",
+    description="Main Travel Assistant. Coordinates Research, Planning/Budget checks, and final Summary.",
     sub_agents=[research_agent, budget_loop, summary_agent]
 )
+
+
 

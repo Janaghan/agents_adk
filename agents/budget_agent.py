@@ -4,7 +4,7 @@ from tools.currency_tool import get_exchange_rate
 from tools.calculate_math import calculate_math
 
 budget_agent = Agent(
-    model='gemini-2.5-flash',
+    model='gemini-2.5-flash-lite',
     name='budget_agent',
     description="Specialist in travel budgeting, calculating total cost, and verifying if it is within budget.",
     instruction="""You are a Travel Budget Expert.

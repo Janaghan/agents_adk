@@ -2,7 +2,7 @@ from google.adk.agents.llm_agent import Agent
 from agents.itinerary_agent import itinerary_agent
 
 planner_agent = Agent(
-    model='gemini-2.5-flash',
+    model='gemini-2.5-flash-lite',
     name='planner_agent',
     description="Specialist in travel planning and compiling itineraries.",
     instruction="""You are a Senior Travel Planner. 

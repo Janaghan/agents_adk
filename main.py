@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-from agents.coordinator_agent import coordinator_agent
+from agents.intake_agent import intake_agent
 
 if __name__ == "__main__":
     import asyncio
@@ -19,7 +19,8 @@ if __name__ == "__main__":
     session_service = InMemorySessionService()
     runner = Runner(
         app_name="travel_agent",
-        agent=coordinator_agent,
+        agent=intake_agent,
+
         session_service=session_service,
         auto_create_session=True
     )

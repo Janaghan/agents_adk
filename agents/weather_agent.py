@@ -2,7 +2,7 @@ from google.adk.agents.llm_agent import Agent
 from tools.weather_tool import get_weather
 
 weather_agent = Agent(
-    model='gemini-2.5-flash',
+    model='gemini-2.5-flash-lite',
     name='weather_agent',
     description="Specialist in weather lookups.",
     instruction="""You are a Weather Specialist. 
