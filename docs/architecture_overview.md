@@ -1,77 +1,127 @@
 # Architecture Overview
 
-This document provides a holistic overview of the Travel Agent Multi-Agent System (MAS). It visually maps the entire journey of a user's request—from the terminal input to the final markdown itinerary—demonstrating how memory, orchestration, delegation, and tools all interact in a single cohesive system.
+This document provides a holistic overview of the Travel Agent Multi-Agent System (MAS) architecture. It traces the complete execution flow from the moment a user inputs a prompt, through the specialized agent hierarchy, down to the tools used, and finally to the generated itinerary output.
 
 ---
 
-## The Complete System Flowchart
+## Comprehensive Execution Flowchart
 
-The following diagram illustrates the complete, end-to-end architecture of the application.
+The following diagram illustrates the complete end-to-end lifecycle of a user's request. It combines the user interface, session memory, orchestrators, sub-agents, and external tool integrations into a single flow.
 
 ```mermaid
-graph TD
-    %% User and Memory Layer
-    User([User Input]) <-->|Chat| Main[main.py / Terminal Runner]
-    Main <-->|Context/History| Mem[(InMemorySessionService)]
+stateDiagram-v2
+    %% UI & Context Layer
+    state "Terminal Chat (main.py)" as UI
+    state "InMemorySessionService" as Memory
     
-    %% Entry Phase
-    Main -->|Invokes| Intake[intake_agent <br/><i>Validates: Destination, Dates, Budget</i>]
-    Intake -- "Missing Info" --> User
-    Intake -- "Handoff (transfer_to_agent)" --> Coord[coordinator_agent <br/><i>Sequential Orchestrator</i>]
-
-    %% Core Multi-Agent Pipeline
-    subgraph Autonomous Multi-Agent Pipeline
-        direction TB
+    %% Intake Phase
+    state "Intake Phase" as Intake {
+        state "intake_agent (Root Agent)" as IntakeAgent
+        state "Check Missing Info" as IntakeCheck
+        state "Generate Trip Brief" as IntakeBrief
         
-        %% Step 1: Research
-        Coord -->|1. Execute Research| Research[research_agent]
-        Research --> Weather[weather_agent] & Hotel[hotel_agent]
-        
-        %% Tool Connections for Research
-        Weather -.->|Tool: get_weather| W_API[Open-Meteo API]
-        Hotel -.->|Tool: search_hotels| S_API[Google Search API]
-        
-        %% Step 2: Planning and Budgeting Loop
-        Coord -->|2. Execute Planning| BudgetLoop{budget_loop <br/><i>Max 3 Iterations</i>}
-        
-        BudgetLoop --> Planner[planner_agent]
-        Planner --> Itinerary[itinerary_agent]
-        Itinerary -.->|Tool: search_activities| S_API2[Google Search API]
-        
-        BudgetLoop --> Budget[budget_agent]
-        Budget -.->|Tool: calculate_math| Math[Math Evaluator]
-        Budget -.->|Tool: get_exchange_rate| Curr[Exchange Rate API]
-        
-        %% Loop Logic
-        Budget -- "Over Budget (Retry)" --> Planner
-        Budget -- "Under Budget" --> Exit[Tool: exit_loop]
-        Exit --> Coord
-        
-        %% Step 3: Summarization
-        Coord -->|3. Execute Summary| Summary[summary_agent]
-    end
+        IntakeAgent --> IntakeCheck
+        IntakeCheck --> UI: Ask User (Missing Info)
+        UI --> IntakeAgent: User Replies
+        IntakeCheck --> IntakeBrief: All Info Present (Dest, Dates, Budget)
+    }
     
-    Summary -- "Generates Markdown" --> Main
+    %% Orchestration Handoff
+    state "Handoff (transfer_to_agent)" as Handoff
+    IntakeBrief --> Handoff
+    
+    %% Main Orchestration Pipeline
+    state "Coordinator Pipeline (SequentialAgent)" as Coordinator {
+        
+        %% Research Phase
+        state "Phase 1: Research" as Research {
+            state "research_agent" as ResearchAgent
+            state "weather_agent" as WeatherAgent
+            state "hotel_agent" as HotelAgent
+            
+            ResearchAgent --> WeatherAgent: transfer_to_agent
+            WeatherAgent --> OpenMeteoAPI: get_weather()
+            OpenMeteoAPI --> WeatherAgent: Return Weather Data
+            WeatherAgent --> ResearchAgent: Return to Manager
+            
+            ResearchAgent --> HotelAgent: transfer_to_agent
+            HotelAgent --> GoogleSearchAPI: hotel_search_tool()
+            GoogleSearchAPI --> HotelAgent: Return Hotel Data
+            HotelAgent --> ResearchAgent: Return to Manager
+        }
+        
+        %% Plan & Budget Loop Phase
+        state "Phase 2: Plan & Budget (LoopAgent)" as BudgetLoop {
+            state "planner_agent" as PlannerAgent
+            state "itinerary_agent" as ItineraryAgent
+            state "budget_agent" as BudgetAgent
+            
+            PlannerAgent --> ItineraryAgent: transfer_to_agent
+            ItineraryAgent --> GoogleSearchAPI2: itinerary_search_tool()
+            GoogleSearchAPI2 --> ItineraryAgent: Return Activities
+            ItineraryAgent --> PlannerAgent: Return Draft
+            
+            PlannerAgent --> BudgetAgent: Forward Draft Itinerary
+            BudgetAgent --> CalcMath: calculate_math()
+            BudgetAgent --> CurrencyTool: get_exchange_rate()
+            
+            state "Cost Check" as CostCheck <<choice>>
+            BudgetAgent --> CostCheck
+            CostCheck --> PlannerAgent: Over Budget (Retry)
+            CostCheck --> ExitLoop: Under Budget (exit_loop tool)
+        }
+        
+        %% Summary Phase
+        state "Phase 3: Summary" as Summary {
+            state "summary_agent" as SummaryAgent
+            SummaryAgent --> MarkdownFormat: Compile Research & Plan
+        }
+        
+        Research --> BudgetLoop: Sequence Transition
+        BudgetLoop --> Summary: Sequence Transition
+    }
+    
+    %% Global Connections
+    UI --> Memory: Appends User Input
+    Memory --> IntakeAgent: Provides Chat History
+    Handoff --> Coordinator
+    MarkdownFormat --> UI: Outputs Final Markdown Guide
+    
+    note right of Memory
+        Memory is continuously updated 
+        with every turn, tool call, 
+        and agent handoff.
+    end note
 ```
 
 ---
 
-## How It Works (Step-by-Step Explanation)
+## Detailed Stage Explanations
 
-### 1. Interface and Memory
-- **`main.py` & `InMemorySessionService`**: The user interacts with the system via the terminal. Every single prompt, tool call, and agent response is recorded in the `InMemorySessionService`. This shared memory means that downstream agents (like the `summary_agent`) inherently know what upstream agents (like the `hotel_agent`) discovered, without needing direct data passing.
+The multi-agent system execution is broken down into distinct, specialized stages:
 
-### 2. Conversational Gating (The Intake Agent)
-- **`intake_agent`**: The runner always starts here. This agent acts as a strict conversational gatekeeper. If the user says, *"Plan a trip to London,"* the agent sees that Dates and Budget are missing and will ask for them. It will **not** trigger the heavy processing pipeline until all criteria are met. Once satisfied, it uses the `transfer_to_agent` tool to hand control to the orchestrator.
+### 1. Initialization and Context (UI & Memory)
+- **Terminal Chat (`main.py`)**: The entry point where the user interacts with the system. It binds the root agent to the ADK `Runner`.
+- **`InMemorySessionService`**: A continuous ledger. Every interaction—user prompts, LLM responses, tool executions, and agent handoffs—is appended here. When any agent wakes up to act, it reads this entire ledger to understand the current context (e.g., the `summary_agent` can look back at the `hotel_agent`'s data without it being explicitly passed).
 
-### 3. Orchestration (The Coordinator Agent)
-- **`coordinator_agent`**: This is a `SequentialAgent`. It does not think for itself; rather, it enforces strict software execution order. It guarantees that Research happens first, Planning happens second, and Summarization happens last.
+### 2. The Intake Phase (Conversational Gating)
+- **`intake_agent`**: The root agent that acts as a friendly gatekeeper. Instead of attempting to plan a trip with missing data, it holds a conversational loop with the user until it has confirmed three mandatory pieces of information: Destination, Travel Dates, and Budget.
+- **Handoff**: Once the data is secured, it generates a standardized "Trip Brief" and uses the `transfer_to_agent` tool to hand control over to the automated pipeline.
 
-### 4. Delegation (Sub-Agents)
-- **`research_agent` & `planner_agent`**: These act as "Managers." Instead of searching for hotels and weather themselves (which would bloat their prompts and confuse the LLM), they delegate narrow tasks to specialized "Sub-Agents" (like `weather_agent` and `itinerary_agent`). 
+### 3. The Coordinator Pipeline (Deterministic Orchestration)
+- **`coordinator_agent`**: A `SequentialAgent` that forces the execution of tasks in a strict, linear order. This prevents the LLM from hallucinating costs before researching, or summarizing before planning.
 
-### 5. Tool Execution
-- **Tools**: When an agent (like the `weather_agent`) needs live data, it outputs a JSON function call instead of text. The ADK framework intercepts this, runs the Python function (`get_weather`), and injects the real-world API data back into the agent's context window.
+### 4. Phase 1: Research (Delegation)
+- **`research_agent`**: Acts as a manager. It does not perform lookups itself. Instead, it delegates tasks horizontally to specialized sub-agents.
+- **`weather_agent`**: A sub-agent that uses the `get_weather` tool (calling the Open-Meteo API) to fetch real-time forecasts.
+- **`hotel_agent`**: A sub-agent that uses a unique Google Search tool to find live hotel availability and pricing.
 
-### 6. Iterative Self-Correction (The Budget Loop)
-- **`budget_loop`**: This is a `LoopAgent` that wraps the planning and budget verification phases. If the `budget_agent` does the math and realizes the itinerary is too expensive, it provides feedback and the loop routes back to the `planner_agent` to pick cheaper options. Only when the budget is satisfied does the agent trigger the `exit_loop` tool, allowing the coordinator to finally move to the summary phase. 
+### 5. Phase 2: Plan & Budget (Self-Correction Loop)
+- **`budget_loop`**: A `LoopAgent` that wraps the planning and budgeting agents. It acts as an autonomous retry mechanism.
+- **`planner_agent`**: Drafts the day-by-day itinerary, delegating activity lookups to the `itinerary_agent` (which uses its own Google Search tool).
+- **`budget_agent`**: Takes the drafted itinerary and acts as an accountant. It uses `calculate_math` and `currency_tool` to sum the total estimated costs. 
+  - *If over budget:* It refuses to exit the loop and sends feedback back to the `planner_agent` to find cheaper options.
+  - *If under budget:* It calls the `exit_loop` tool, allowing the sequence to proceed.
+
+### 6. Phase 3: Summary (Final Output)
+- **`summary_agent`**: The final node in the sequence. It reads the entire session memory, extracts the finalized itinerary and research data, and formats a beautiful, cohesive Markdown travel guide to present back to the user on the Terminal.
