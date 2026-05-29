@@ -1,8 +1,8 @@
-# Travel Agent Multi-Agent System ✈️
+# Travel Agent Multi-Agent System 
 
-Welcome to the **Travel Agent ADK Project**! This repository demonstrates the evolution from a basic Large Language Model (LLM) interaction to a production-ready **Multi-Agent System (MAS)** using Google's Agent Development Kit (ADK).
+Welcome to the **Travel Agent ADK Project**! This repository demonstrates the evolution from a basic Large Language Model (LLM) interaction to a **Multi-Agent System** using Google's Agent Development Kit (ADK).
 
-## 🎯 Project Overview & Objectives
+##  Project Overview & Objectives
 
 The goal of this project is to build an intelligent, autonomous travel planner that can:
 1. **Intake:** Converse with users to collect travel requirements (Destination, Dates, Budget).
@@ -12,9 +12,39 @@ The goal of this project is to build an intelligent, autonomous travel planner t
 
 By following this documentation, you will learn how to orchestrate complex reasoning, tool execution, and delegation across multiple specialized AI agents.
 
+--- 
+
+##  Quick Start: How to Run
+
+Follow these steps to get the travel agent running on your local machine:
+
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repository-url>
+   cd agents_adk
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Set up your environment variables:**
+   Create a `.env` file in the root directory and add your Google Gemini API key:
+   ```bash
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+4. **Run the agent:**
+   ```bash
+   python3 main.py
+   ```
+
+You will enter a terminal chat loop. Start by asking it to plan a trip!
+
 ---
 
-## 🗺️ Learning Roadmap
+##  Learning Roadmap
 
 This repository contains a dedicated `docs/` folder charting the learning journey. We recommend reading them in this order:
 
@@ -36,9 +66,6 @@ agents_adk/
 ├── main.py                        # Entrypoint: terminal chat runner loop
 ├── schema.py                      # Pydantic data schemas for structured outputs
 ├── requirements.txt               # Dependencies
-│
-├── configs/                       
-│   └── settings.yaml              # ADK settings (caching, Laminar observability)
 │
 ├── tools/                         # Custom Tool Implementations
 │   ├── __init__.py                
@@ -72,7 +99,7 @@ agents_adk/
 
 ---
 
-## 💡 Key Concepts Learned
+##  Key Concepts Learned
 
 - **Function Calling:** Allowing LLMs to execute Python functions and interpret the results.
 - **Session Memory:** Retaining state across a continuous user interaction.
@@ -80,37 +107,5 @@ agents_adk/
 - **Deterministic Orchestration:** Using Code (Sequential/Loop nodes) rather than Prompts to guarantee the order of execution.
 - **Self-Correction Loops:** Creating agents that verify their own output (like our `budget_loop`) and retry if constraints fail.
 
----
 
-## ⚙️ End-to-End Workflow Diagram
 
-```mermaid
-graph TD
-    User([User Prompt]) --> Main[main.py (Runner)]
-    Main --> Intake[intake_agent <br/><i>Collects Destination, Dates, Budget</i>]
-    
-    Intake -- "Handoff (transfer_to_agent)" --> Coord[coordinator_agent <br/><i>SequentialAgent</i>]
-
-    subgraph Pipeline
-        Coord --> Research[research_agent]
-        Research --> Weather[weather_agent] & Hotel[hotel_agent]
-        
-        Coord --> BudgetLoop[budget_loop <br/><i>Iterates up to 3 times</i>]
-        BudgetLoop --> Planner[planner_agent]
-        Planner --> Itinerary[itinerary_agent]
-        BudgetLoop --> Budget[budget_agent <br/><i>Checks cost vs budget</i>]
-        
-        Coord --> Summary[summary_agent]
-    end
-
-    Summary --> FinalOutput([Final Markdown Itinerary])
-```
-
----
-
-## 🚀 Future Enhancements & Roadmap
-
-- **Streaming Outputs:** Implement token-by-token streaming for the final summary to improve perceived latency.
-- **Database Persistence:** Swap `InMemorySessionService` for a persistent backend (e.g., PostgreSQL or Redis) to save itineraries across sessions.
-- **Web UI:** Build a Next.js frontend to replace the terminal chat interface.
-- **Booking Integration:** Add active tools to simulate booking flights and hotels via external APIs.
