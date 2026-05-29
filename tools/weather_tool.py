@@ -1,4 +1,6 @@
 import requests
+from zoneinfo import ZoneInfo
+from datetime import datetime
 
 def get_weather(location: str) -> dict:
     """Returns current weather and temperature for a given location using Open-Meteo."""
