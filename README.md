@@ -57,7 +57,7 @@ This repository contains a dedicated `docs/` folder charting the learning journe
 
 ---
 
-## 📂 Folder Structure
+##  Folder Structure
 
 ```text
 agents_adk/
