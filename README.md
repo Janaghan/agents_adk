@@ -89,7 +89,7 @@ agents_adk/
 
 ---
 
-## 🛠️ Technologies and Frameworks Used
+##  Technologies and Frameworks Used
 
 - **[Google Agent Development Kit (ADK)](https://google.github.io/adk-docs/)**: The core framework providing `Agent`, `SequentialAgent`, `LoopAgent`, memory services, and tool integration.
 - **Google Gemini API**: Utilizing the `gemini-2.0-flash` model for high-speed, cost-effective reasoning.
