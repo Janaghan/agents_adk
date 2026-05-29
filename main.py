@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from agents.coordinator_agent import coordinator_agent
-from agents.budget_agent import budget_agent
-from agents.itinerary_agent import itinerary_agent
 
 if __name__ == "__main__":
     import asyncio

@@ -1,4 +1,4 @@
-from agents.weather_agent import coordinator_agent
+from agents.coordinator_agent import coordinator_agent
 
 class PlannerWorkflow:
     """
