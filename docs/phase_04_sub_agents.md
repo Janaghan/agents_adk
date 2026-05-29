@@ -13,8 +13,6 @@ In our project, the `research_agent` acts as a "Manager." It doesn't actually se
 - **Transfer to Agent (Handoff):** The mechanism by which a manager pauses its own execution, gives a command to a sub-agent, and waits for that sub-agent to return a result.
 - **Agent Registry:** How the underlying system tracks agent names to ensure control is passed to the correct entity.
 
-**Beginner-Friendly Explanation:**
-Imagine a General Contractor building a house. They don't do the plumbing and electrical work themselves. When it's time for plumbing, they call the Plumber (a Sub-Agent), tell them what to do, and wait. The Plumber uses their specific tools (wrenches, pipes), finishes the job, and reports back to the Contractor.
 
 ---
 
