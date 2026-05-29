@@ -11,7 +11,7 @@ In our ADK implementation, we use a `SequentialAgent` to enforce a strict pipeli
 ## 2. Concepts Learned
 - **Sequential Agent:** An orchestration wrapper that runs a list of sub-agents in a strict linear order. Agent A finishes, passing its output as context to Agent B.
 - **Loop Agent:** An orchestration wrapper that reruns a set of sub-agents repeatedly until a specific exit condition is met (or a max iteration limit is reached).
-  
+
 **Beginner-Friendly Explanation:**
 Instead of telling one chef, *"Go buy ingredients, then cook the food, then plate it,"* you set up an assembly line. The Shopper buys the food and puts it on a conveyor belt. The Cook takes it, cooks it, and puts it back on the belt. The Plater finishes it. If the Cook burns the food, a Loop sends it back to the Shopper to buy more.
 
@@ -32,33 +32,41 @@ Instead of telling one chef, *"Go buy ingredients, then cook the food, then plat
 ## 4. Architecture Diagram
 
 ```text
-      [ Start Sequence ]
-              │
-              ▼
-    ┌────────────────────┐
-    │  research_agent    │
-    └─────────┬──────────┘
-              │
-              ▼ (Start Loop)
-    ┌────────────────────┐ ◄──────┐
-    │  planner_agent     │        │
-    └─────────┬──────────┘        │
-              │                   │
-              ▼                   │
-    ┌────────────────────┐        │
-    │  budget_agent      │ ──[Over Budget]
-    └─────────┬──────────┘
-              │
-        [Under Budget]
-       (Calls exit_loop)
-              │
-              ▼
-    ┌────────────────────┐
-    │  summary_agent     │
-    └─────────┬──────────┘
-              │
-              ▼
-       [ End Sequence ]
+           [ Start Sequence ]
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │   Research Agent    │
+        └──────────┬──────────┘
+                   │
+                   ▼
+  ┌────────► [ Budget Loop ] ──────────┐
+  │                │                   │
+  │                ▼                   │
+  │     ┌─────────────────────┐        │
+  │     │    Planner Agent    │        │
+  │     └──────────┬──────────┘        │
+  │                │                   │
+  │                ▼                   │
+  │     ┌─────────────────────┐        │
+  │     │     Budget Agent    │        │
+  │     └──────────┬──────────┘        │
+  │                │                   │
+  │   ┌────────────┴────────────┐      │
+  └── │ Over Budget (No Exit)   │      │
+      └─────────────────────────┘      │
+                                       │
+      ┌─────────────────────────┐      │
+      │ Under Budget (exit_loop)│ ◄────┘
+      └────────────┬────────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │    Summary Agent    │
+        └──────────┬──────────┘
+                   │
+                   ▼
+            [ End Sequence ]
 ```
 
 ---

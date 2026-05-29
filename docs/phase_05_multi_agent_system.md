@@ -15,13 +15,11 @@ In our project, this is realized by the `intake_agent` (the conversational entry
 - **Agent Identity & Registry Management:** Ensuring every agent and tool has a unique namespace (e.g., creating `research_search_agent` vs `hotel_search_agent`) so the system doesn't accidentally route data to the wrong sub-agent.
 
 **Beginner-Friendly Explanation:**
-A Multi-Agent System (MAS) is just like walking into a high-end, fully staffed Travel Agency. 
-
-1. First, you are greeted by the **Friendly Receptionist** (`intake_agent`). You chat with them back-and-forth until they understand exactly where you want to go and how much you want to spend.
-2. The Receptionist then takes your file into the back office and hands it to the **General Manager** (`coordinator_agent`). 
-3. You never see the General Manager. Instead, they silently run a strict factory operation in the back. They assign tasks to the **Research Team** (to look up live hotel prices and weather) and the **Finance Team** (to verify you can afford the itinerary).
-4. If the Finance Team realizes a hotel is too expensive, they automatically send it back to the planners to find a cheaper option.
-5. Finally, when the perfect trip is planned, the Manager hands the data to a **Professional Copywriter** (`summary_agent`), who types up a beautiful, personalized travel brochure and hands it directly to you.
+Think of this as a fully staffed Travel Agency. 
+1. The **Receptionist** (`intake_agent`) chats with you to get your basic needs. 
+2. They hand your file to the **General Manager** (`coordinator_agent`). 
+3. The Manager silently coordinates the **Research Team** and the **Finance/Planning Team**. 
+4. Once everyone is done, a **Copywriter** (`summary_agent`) types up a beautiful brochure and hands it back to you.
 
 ---
 
@@ -36,28 +34,38 @@ A Multi-Agent System (MAS) is just like walking into a high-end, fully staffed T
 ## 4. Architecture Diagram
 
 ```text
-         [ User Input ]
-               │
-               ▼
-      ┌─────────────────┐
-      │  intake_agent   │ ◄─── (Conversational Phase)
-      └────────┬────────┘
-               │ (handoff when ready)
-               ▼
-      ┌─────────────────┐
-      │coordinator_agent│ ───► [ Research Phase ]
-      │ (Sequential)    │        (Weather & Hotel)
-      │                 │               │
-      │                 │               ▼
-      │                 │      [ Plan & Budget Loop ]
-      │                 │        (Iterative limits)
-      │                 │               │
-      │                 │               ▼
-      │                 │      [ Summary Phase ]
-      └────────┬────────┘
-               │
-               ▼
-       [ Final Markdown ]
+                  [ User Input ]
+                        │
+                        ▼
+             ┌─────────────────────┐
+             │    intake_agent     │ ◄── (Conversational Loop)
+             └──────────┬──────────┘
+                        │
+                  (Handoff when Ready)
+                        │
+                        ▼
+             ┌─────────────────────┐
+             │  coordinator_agent  │ ◄── (Sequential Pipeline Starts)
+             └──────────┬──────────┘
+                        │
+       ┌────────────────┼────────────────┐
+       │                │                │
+       ▼                ▼                ▼
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│  Research    │ │ Plan & Budget│ │   Summary    │
+│    Phase     │ │    Phase     │ │    Phase     │
+└──────┬───────┘ └──────┬───────┘ └──────┬───────┘
+       │                │                │
+       ▼                ▼                │
+   [ Weather ]     [ Planner ]           │
+   [ Hotel   ]          ↕                │
+                   [ Budget ]            │
+                                         │
+                                         ▼
+                               [ Final Markdown Output ]
+                                         │
+                                         ▼
+                                       User
 ```
 
 ---

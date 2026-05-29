@@ -14,13 +14,9 @@ In our Travel Agent project, the `intake_agent` embodies this concept. It acts a
 - **State Evaluation:** The agent determines if it has all necessary data (Complete) or if it needs to ask follow-up questions (Incomplete).
 
 **Beginner-Friendly Explanation:**
-Imagine hiring a new receptionist for your office. You give them one very strict rule: *"Do not let anyone past this desk until they tell you three things: their name, their appointment time, and who they are here to see."* 
+Imagine hiring a receptionist. You give them one simple rule: *"Do not let anyone past this desk until they tell you their name, their appointment time, and who they are here to see."* The Single Agent works exactly like this receptionist.
 
-If a visitor walks in and only says, "I'm here to see John," the receptionist won't let them through. Instead, they will politely ask, "What is your name and appointment time?" 
-
-A Single Agent works exactly like this receptionist. It acts as a smart gatekeeper that chats with the user, understands what information is missing, and naturally asks follow-up questions before allowing the system to move forward to the complex planning stages.
-
---- 
+---
 
 ## 3. Implementation Details
 In our project, this is implemented in `agents/intake_agent.py`.
@@ -36,21 +32,21 @@ In our project, this is implemented in `agents/intake_agent.py`.
 ## 4. Architecture Diagram
 
 ```text
-           [ User Prompt ]
-                  │
-                  ▼
-          ┌───────────────┐
-          │ intake_agent  │
-          └───────┬───────┘
-                  │
-           (Check Details)
-             /          \
-      [ Missing ]    [ Complete ]
-          │                │
-          ▼                ▼
-   [ Ask User ]    [ Generate Brief ]
-          │                │
-     (Loop Back)     (Pass to Next Phase)
+                  [ User Input ]
+                        │
+                        ▼
+             ┌─────────────────────┐
+             │    intake_agent     │
+             └──────────┬──────────┘
+                        │
+         ┌──────────────┴──────────────┐
+         ▼                             ▼
+  [ Missing Info? ]             [ All Info Provided? ]
+         │                             │
+         ▼                             ▼
+[ Ask User Follow-up ]        [ Generate Trip Brief ]
+         │                             │
+         └─────────► User              └─────────► [ Transfer to Coordinator ]
 ```
 
 ---

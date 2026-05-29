@@ -14,13 +14,9 @@ In our project, the `research_agent` acts as a "Manager." It doesn't actually se
 - **Agent Registry:** How the underlying system tracks agent names to ensure control is passed to the correct entity.
 
 **Beginner-Friendly Explanation:**
-Imagine a General Contractor managing the construction of a new house. The contractor doesn't personally install the toilets or wire the electricity—doing everything themselves would lead to mistakes. 
+Imagine a General Contractor building a house. They don't do the plumbing and electrical work themselves. When it's time for plumbing, they call the Plumber (a Sub-Agent), tell them what to do, and wait. The Plumber uses their specific tools (wrenches, pipes), finishes the job, and reports back to the Contractor.
 
-Instead, they use **Delegation**. When it's time for plumbing, the Contractor calls a specialist: the Plumber (a Sub-Agent). The Contractor gives the Plumber instructions and then steps back to wait. The Plumber brings their own highly specialized tools (wrenches, pipes), completes the job flawlessly, and reports back. 
-
-In our AI system, the Manager Agent doesn't try to know everything. Instead, it delegates weather questions to a dedicated Weather Agent and hotel questions to a dedicated Hotel Agent. This makes the system incredibly smart and less prone to errors.
-
---- 
+---
 
 ## 3. Implementation Details
 In `agents/research_agent.py`, the agent is configured with `sub_agents=[weather_agent, hotel_agent]`.
@@ -33,21 +29,36 @@ In `agents/research_agent.py`, the agent is configured with `sub_agents=[weather
 ## 4. Architecture Diagram
 
 ```text
-  [ Orchestrator ]
-         │
-         ▼
- ┌───────────────┐
- │ research_agent│ ──(1) Transfer──► ┌───────────────┐
- │  (Manager)    │                   │ weather_agent │ ──(Calls API)
- │               │ ◄─(2) Returns ────└───────────────┘
- │               │
- │               │ ──(3) Transfer──► ┌───────────────┐
- │               │                   │  hotel_agent  │ ──(Calls API)
- │               │ ◄─(4) Returns ────└───────────────┘
- └───────┬───────┘
-         │ (Consolidates Data)
-         ▼
-  [ Orchestrator ]
+           [ Pipeline (SequentialAgent) ]
+                         │
+                         ▼ (Triggers Phase)
+             ┌───────────────────────┐
+             │ Manager: research_agent │ 
+             └───────────┬───────────┘
+                         │ (transfer_to_agent)
+             ┌───────────┴───────────┐
+             ▼                       ▼
+ ┌──────────────────────┐  ┌─────────────────────┐
+ │ Sub1: weather_agent  │  │  Sub2: hotel_agent  │
+ └──────────┬───────────┘  └─────────┬───────────┘
+            │                        │
+            ▼                        ▼
+     [ get_weather API ]      [ search_hotels API ]
+            │                        │
+            ▼                        ▼
+ ┌──────────────────────┐  ┌─────────────────────┐
+ │ Returns Weather Data │  │ Returns Hotel Data  │
+ └──────────┬───────────┘  └─────────┬───────────┘
+            │                        │
+            └───────────┬────────────┘
+                        │ (transfer_to_agent back to Manager)
+                        ▼
+             ┌───────────────────────┐
+             │ Manager: research_agent │
+             └───────────┬───────────┘
+                         │ 
+                         ▼ (Completes Turn)
+           [ Pipeline (SequentialAgent) ]
 ```
 
 ---
