@@ -12,7 +12,7 @@ def get_weather(location: str) -> str:
     return json.dumps(data)
 
 coordinator_agent = Agent(
-    model='gemini-2.5-flash',
+    model='gemini-2.5-flash-lite',
     name='Coordinator_Agent',
     description="I am a coordinator that uses tools to answer questions.",
     instruction="You are a Coordinator Agent. Use the get_weather tool to answer weather questions.",

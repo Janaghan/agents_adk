@@ -6,3 +6,6 @@ __pycache__/
 
 settings.yaml
 session.db
+workflow_and_structure.md
+output.txt
+scratch/test_flow.py

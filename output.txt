@@ -1,0 +1,60 @@
+janaghan@sign2txt:/data/Janaghan/gemini/agents_adk$ python3 main.py 
+Travel Agent ADK Initialized (Terminal Chat Mode).
+Type 'exit' or 'quit' to stop.
+
+You: planned to go chennai for 3 days with 12k budget.
+Coordinator Agent: That sounds like a wonderful trip! Just to confirm, could you please tell me the exact dates you're planning to travel to Chennai?Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+
+[Tool Calling: transfer_to_agent]...I can help you with the weather in Chennai. What dates are you planning to visit?
+[Tool Calling: transfer_to_agent]...I can help you plan your 3-day trip to Chennai with a budget of 12,000. To give you the best recommendations, please provide me with your travel dates.I will first calculate the total cost of the planned itinerary items using the `calculate_math` tool. Then, I will compare the total cost with the 12,000 budget. If the total cost is within the budget, I will call the `exit_loop` tool. Otherwise, I will inform you about the exceeded amount and list the most expensive items.
+[Tool Calling: calculate_math]...The total cost of your trip to Chennai is 11,000, which is within your budget of 12,000. Therefore, I will now exit the loop.
+[Tool Calling: exit_loop]...# Your Chennai Adventure Awaits! 🏖️
+
+Get ready for an incredible 3-day journey through the vibrant city of Chennai! We've crafted a fantastic itinerary designed to immerse you in the local culture, history, and flavors, all while staying comfortably within your 12,000 budget.
+
+## Trip Overview
+
+*   **Duration:** 3 Days
+*   **Destination:** Chennai, India
+*   **Budget:** ₹12,000
+
+## Your Chennai Itinerary Highlights
+
+Chennai offers a unique blend of ancient traditions and modern dynamism. Prepare to be captivated by its stunning temples, colonial architecture, delicious South Indian cuisine, and the gentle rhythm of the Bay of Bengal.
+
+### Day 1: Cultural Immersion & Coastal Breezes
+
+*   **Morning:** Begin your Chennai exploration at the iconic **Kapaleeshwarar Temple** in Mylapore. Marvel at its Dravidian architecture and soak in the spiritual ambiance.
+*   **Afternoon:** Wander through the historic **San Thome Basilica**, a beautiful church built over the tomb of St. Thomas the Apostle.
+*   **Evening:** Experience the lively atmosphere of **Marina Beach**, one of the longest urban beaches in the world. Enjoy a leisurely stroll, savor local street food, and watch the sunset paint the sky.
+
+### Day 2: History, Art & Local Flavors
+
+*   **Morning:** Step back in time at the **Fort St. George**, the first English fortress in India. Explore the museum within its premises, showcasing a rich collection of artifacts from the colonial era.
+*   **Afternoon:** Delve into the world of art and history at the **Government Museum (Egmore)**, home to an impressive collection of Chola bronzes and other South Indian art.
+*   **Evening:** Indulge in a culinary journey at a local restaurant, savoring authentic Chettinad or other regional delicacies.
+
+### Day 3: Modern Chennai & Departure
+
+*   **Morning:** Explore the bustling **Pondy Bazaar** for some last-minute souvenir shopping or to experience the local market vibe.
+*   **Afternoon:** Visit the serene **Birla Planetarium** for an educational and entertaining experience.
+*   **Evening:** Enjoy a final South Indian meal before heading for your departure, filled with memories of your Chennai escapade.
+
+## Budget Breakdown
+
+We're delighted to confirm that your planned trip comes in **under budget**!
+
+*   Accommodation: ₹2,500
+*   Activities & Entrance Fees: ₹1,800
+*   Local Transportation: ₹2,000
+*   Food & Dining: ₹1,500
+*   Miscellaneous/Shopping: ₹2,200
+*   Contingency: ₹1,000
+
+**Total Estimated Cost: ₹11,000**
+**Budget: ₹12,000**
+**Remaining: ₹1,000**
+
+## Get Ready for an Unforgettable Trip!
+
+Chennai is a city that will charm you with its warmth, history, and vibrant spirit. Get ready to create lasting memories! We hope you have a spectacular journey!
