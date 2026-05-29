@@ -105,7 +105,7 @@ agents_adk/
 - **Session Memory:** Retaining state across a continuous user interaction.
 - **Agent Handoffs:** Safely transferring execution context from a "manager" agent to a "specialist" agent and back.
 - **Deterministic Orchestration:** Using Code (Sequential/Loop nodes) rather than Prompts to guarantee the order of execution.
-- **Self-Correction Loops:** Creating agents that verify their own output (like our `budget_loop`) and retry if constraints fail.
+- **Self-Correction Loops:** Creating agents that verify their own output (like our `budget_loop`) and retry if constraints fail. 
 
 
 
