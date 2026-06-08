@@ -57,36 +57,13 @@ The system uses a hierarchical agent structure managed by `coordinator_agent` (a
 
 ```mermaid
 graph TD
-    User([User Input]) --> Main[main.py]
-    Main --> Runner[ADK Runner]
-    Runner --> Intake["intake_agent (Conversational Intake Agent)"]
-    Intake -- "Handoff (transfer_to_agent)" --> Coord["coordinator_agent (SequentialAgent)"]
+    User([User Input]) --> Intake["intake_agent (Conversational Intake)"]
+    Intake -- "Handoff (transfer_to_agent)" --> Coord["coordinator_agent (SequentialAgent Orchestrator)"]
 
-    subgraph Phase 1: Research
-        Coord --> Research["research_agent (Agent)"]
-        Research --> Weather["weather_agent (Agent)"]
-        Research --> Hotel["hotel_agent (Agent)"]
-        Research --> GoogleSearch1["research_search_tool (GoogleSearchAgentTool)"]
-
-        Weather --> WeatherTool["weather_tool.py (get_weather)"]
-        Hotel --> GoogleSearchHotel["hotel_search_tool (GoogleSearchAgentTool)"]
-    end
-
-    subgraph Phase 2: Budget Loop
-        Coord --> BudgetLoop["budget_loop (LoopAgent - max 5 iterations)"]
-        BudgetLoop --> Planner["planner_agent (Agent)"]
-        BudgetLoop --> Budget["budget_agent (Agent)"]
-
-        Planner --> Itinerary["itinerary_agent (Agent)"]
-        Itinerary --> GoogleSearchItinerary["itinerary_search_tool (GoogleSearchAgentTool)"]
-        
-        Budget --> CalcMath["calculate_math.py (calculate_math)"]
-        Budget --> CurrTool["currency_tool.py (get_exchange_rate)"]
-        Budget --> ExitLoop["exit_loop (ADK Tool)"]
-    end
-
-    subgraph Phase 3: Summary
-        Coord --> Summary["summary_agent (Agent)"]
+    subgraph coordinator_agent Sequence
+        Coord --> Research["research_agent (Research Weather/Hotels/Food)"]
+        Coord --> BudgetLoop["budget_loop (Plan & Budget Check Loop)"]
+        Coord --> Summary["summary_agent (Generate Final Guide)"]
     end
 
     Summary --> FinalOutput([Final Markdown Response])
