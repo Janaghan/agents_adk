@@ -58,15 +58,15 @@ The system uses a hierarchical agent structure managed by `coordinator_agent` (a
 ```mermaid
 graph TD
     User([User Input]) --> Intake["intake_agent (Conversational Intake)"]
-    Intake -- "Handoff (transfer_to_agent)" --> Coord["coordinator_agent (SequentialAgent Orchestrator)"]
+    Intake -- "Handoff (transfer_to_agent)" --> Coord["coordinator_agent (Sequential Orchestrator)"]
 
-    subgraph coordinator_agent Sequence
-        Coord --> Research["research_agent (Research Weather/Hotels/Food)"]
-        Coord --> BudgetLoop["budget_loop (Plan & Budget Check Loop)"]
-        Coord --> Summary["summary_agent (Generate Final Guide)"]
+    subgraph coordinator_agent sequence
+        Coord --> Research["research_agent (Research Specialist)"]
+        Research --> Loop["budget_loop (Iterative Planner & Budget Checker)"]
+        Loop --> Summary["summary_agent (Summarizer)"]
     end
 
-    Summary --> FinalOutput([Final Markdown Response])
+    Summary --> Output([Final Markdown Output])
 ```
 
 ---
