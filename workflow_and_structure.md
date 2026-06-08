@@ -4,7 +4,7 @@ This document provides a detailed overview of the Travel Agent project, built us
 
 ---
 
-## 📂 Directory Structure
+##  Directory Structure
 
 The project follows a clean, modular structure, separating agent definitions, custom tools, workflows, configuration files, and utility schemas.
 
@@ -49,7 +49,7 @@ The project follows a clean, modular structure, separating agent definitions, cu
 
 ---
 
-## 🔄 Agent Hierarchy & Workflow Flowchart
+##  Agent Hierarchy & Workflow Flowchart
 
 The system uses a hierarchical agent structure managed by `coordinator_agent` (a `SequentialAgent`), coordinating the sequentially executed research, planning, budgeting, and summarization tasks.
 
@@ -59,34 +59,34 @@ The system uses a hierarchical agent structure managed by `coordinator_agent` (a
 graph TD
     User([User Input]) --> Main[main.py]
     Main --> Runner[ADK Runner]
-    Runner --> Intake[intake_agent <br/><i>Agent (Conversational Intake)</i>]
-    Intake -- "Handoff (transfer_to_agent)" --> Coord[coordinator_agent <br/><i>SequentialAgent</i>]
+    Runner --> Intake["intake_agent (Conversational Intake Agent)"]
+    Intake -- "Handoff (transfer_to_agent)" --> Coord["coordinator_agent (SequentialAgent)"]
 
     subgraph Phase 1: Research
-        Coord --> Research[research_agent <br/><i>Agent</i>]
-        Research --> Weather[weather_agent <br/><i>Agent</i>]
-        Research --> Hotel[hotel_agent <br/><i>Agent</i>]
-        Research --> GoogleSearch1[research_search_tool <br/><i>GoogleSearchAgentTool</i>]
+        Coord --> Research["research_agent (Agent)"]
+        Research --> Weather["weather_agent (Agent)"]
+        Research --> Hotel["hotel_agent (Agent)"]
+        Research --> GoogleSearch1["research_search_tool (GoogleSearchAgentTool)"]
 
-        Weather --> WeatherTool[weather_tool.py <br/><i>get_weather</i>]
-        Hotel --> GoogleSearchHotel[hotel_search_tool <br/><i>GoogleSearchAgentTool</i>]
+        Weather --> WeatherTool["weather_tool.py (get_weather)"]
+        Hotel --> GoogleSearchHotel["hotel_search_tool (GoogleSearchAgentTool)"]
     end
 
     subgraph Phase 2: Budget Loop
-        Coord --> BudgetLoop[budget_loop <br/><i>LoopAgent (max 5 iterations)</i>]
-        BudgetLoop --> Planner[planner_agent <br/><i>Agent</i>]
-        BudgetLoop --> Budget[budget_agent <br/><i>Agent</i>]
+        Coord --> BudgetLoop["budget_loop (LoopAgent - max 5 iterations)"]
+        BudgetLoop --> Planner["planner_agent (Agent)"]
+        BudgetLoop --> Budget["budget_agent (Agent)"]
 
-        Planner --> Itinerary[itinerary_agent <br/><i>Agent</i>]
-        Itinerary --> GoogleSearchItinerary[itinerary_search_tool <br/><i>GoogleSearchAgentTool</i>]
+        Planner --> Itinerary["itinerary_agent (Agent)"]
+        Itinerary --> GoogleSearchItinerary["itinerary_search_tool (GoogleSearchAgentTool)"]
         
-        Budget --> CalcMath[calculate_math.py <br/><i>calculate_math</i>]
-        Budget --> CurrTool[currency_tool.py <br/><i>get_exchange_rate</i>]
-        Budget --> ExitLoop[exit_loop <br/><i>ADK Tool</i>]
+        Budget --> CalcMath["calculate_math.py (calculate_math)"]
+        Budget --> CurrTool["currency_tool.py (get_exchange_rate)"]
+        Budget --> ExitLoop["exit_loop (ADK Tool)"]
     end
 
     subgraph Phase 3: Summary
-        Coord --> Summary[summary_agent <br/><i>Agent</i>]
+        Coord --> Summary["summary_agent (Agent)"]
     end
 
     Summary --> FinalOutput([Final Markdown Response])
@@ -94,7 +94,7 @@ graph TD
 
 ---
 
-## 👥 Component Descriptions
+##  Component Descriptions
 
 ### 1. Agents Directory (`agents/`)
 
@@ -125,7 +125,7 @@ Tools are Python functions that are exposed to agents for external integration.
 
 ---
 
-## 🚀 Execution Lifecycle
+##  Execution Lifecycle
 
 1. **User Prompt**: The user runs `python main.py` and inputs a query (e.g. *"Plan a 3-day trip to Goa with a budget of $500"*).
 2. **Initialization**: `main.py` loads `.env` settings, creates an `InMemorySessionService`, and binds `intake_agent` to an ADK `Runner`.
@@ -142,14 +142,14 @@ Tools are Python functions that are exposed to agents for external integration.
    - `planner_agent` accepts research data and asks `itinerary_agent` to build day-by-day activities.
    - `itinerary_agent` uses `itinerary_search_tool` to lookup activities and costs.
    - `budget_agent` receives the itinerary, sums the costs using `calculate_math`, and uses `get_exchange_rate` if currency conversion is needed.
-   - If the cost is $\le \$500$, `budget_agent` calls `exit_loop` and breaks out.
-   - If the cost is $>\$500$, `budget_agent` provides a breakdown of expensive items and control returns to `planner_agent` to re-estimate/optimize.
+   - If the cost is within the user's budget, `budget_agent` calls `exit_loop` and breaks out.
+   - If the cost exceeds the user's budget, `budget_agent` provides a breakdown of expensive items and control returns to `planner_agent` to re-estimate/optimize.
 6. **Final Summary**:
    - `summary_agent` is invoked to format the final itinerary, hotel list, weather warning, and budget verification into a beautiful Markdown report.
 
 ---
 
-## ✅ Workflow Organization Audit
+##  Workflow Organization Audit
 
 Based on a thorough review of the directory and the codebase:
 - **Clean Structure**: Separation between `agents`, `tools`, `docs`, and `workflows` matches the recommended ADK workflow setup perfectly.
